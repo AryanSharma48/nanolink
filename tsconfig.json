@@ -1,0 +1,9 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "commonjs",
+    "esModuleInterop": true,         // Allows default imports from CommonJS modules
+    "forceConsistentCasingInFileNames": true,
+    "strict": true
+  }
+}
