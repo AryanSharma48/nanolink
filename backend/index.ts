@@ -1,4 +1,5 @@
 import Fastify from 'fastify'; 
+import cors from '@fastify/cors'
 
 import {createTable } from './model/db'
 import urlRoutes from './routes/urlRoutes'; 
@@ -7,8 +8,9 @@ const fastify = Fastify({
   logger: true
 });
 
-
+fastify.register(cors);
 fastify.register(urlRoutes);
+
 
 const PORT = 3000;
 

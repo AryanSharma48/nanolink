@@ -6,14 +6,30 @@ function App() {
   const [shortUrl, setShortUrl] = useState('');
   const [isCopied, setIsCopied] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!longUrl) return;
-    
-    // Simulating backend generation
-    const fakeToken = Math.random().toString(36).substring(2, 8);
-    setShortUrl(`http://localhost:3000/${fakeToken}`);
-    setIsCopied(false);
+
+    const url = "http://localhost:3000/url";
+    const options = {
+      method : 'POST',
+      headers: {
+        'Content-Type':'application/json',
+      },
+      body: JSON.stringify({
+        url: longUrl,
+      }) 
+    }
+
+    try{
+      const response = await fetch(url,options);
+      if (!response.ok) throw new Error ('Failed to fetch url');
+      const result = await response.json(); 
+      setShortUrl(result["Shortened URL"]);
+      setIsCopied(false);
+    }catch(error){
+      console.error(error);
+    }
   };
 
   const copyToClipboard = () => {
