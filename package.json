@@ -1,1 +1,15 @@
-{"scripts":{"start":"npx tsx index.ts"},"dependencies":{"express":"^5.2.1","pg":"^8.22.0","tsx":"^4.22.4"},"devDependencies":{"@types/express":"^5.0.6","@types/node":"^26.0.1","@types/pg":"^8.20.0"}}
+{
+    "name": "linkme",
+    "scripts": {
+        "start": "npx tsx index.ts"
+    },
+    "dependencies": {
+        "fastify": "^5.10.0",
+        "pg": "^8.22.0",
+        "tsx": "^4.22.4"
+    },
+    "devDependencies": {
+        "@types/node": "^26.0.1",
+        "@types/pg": "^8.20.0"
+    }
+}

@@ -1,9 +1,9 @@
-# URL Shortener API
+# LinkMe - URL Shortener API
 
-A robust, containerized REST API for shortening URLs, built from scratch with Node.js, Express, TypeScript, and PostgreSQL.
+A robust, containerized REST API for shortening URLs, built from scratch with Node.js, Fastify, TypeScript, and PostgreSQL.
 
 ## Tech Stack
-- **Backend**: Node.js, Express, TypeScript
+- **Backend**: Node.js, Fastify, TypeScript
 - **Database**: PostgreSQL (with `pg` driver)
 - **Infrastructure**: Docker, Docker Compose
 
@@ -38,7 +38,7 @@ A robust, containerized REST API for shortening URLs, built from scratch with No
 
 ### 1. Health Check
 Checks if the server is up and running.
-- **URL**: `/health`
+- **URL**: `/`
 - **Method**: `GET`
 - **Response**:
   ```json

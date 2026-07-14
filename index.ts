@@ -1,22 +1,37 @@
-import express from 'express';
+import Fastify from 'fastify'; 
 
 import {createTable } from './model/db'
 import urlRoutes from './routes/urlRoutes'; 
 
-const app = express(); 
-app.use(express.json());
-app.use('/', urlRoutes);
+const fastify = Fastify({
+  logger: true
+});
+
+
+fastify.register(urlRoutes);
 
 const PORT = 3000;
 
-app.get('/', (req, res) => {
-    res.json({
+fastify.get('/', (req, reply) => {
+    reply.send({
         "Status" : "OK"
     })
 })
 
-createTable();
+async function start(){
+    createTable();
+    try{
+        await fastify.listen({ 
+            port: 3000,
+            host:'0.0.0.0',
+        }); 
+    } catch(err){
+        fastify.log.error(err);
+        process.exit(1); 
+    }
+}
 
-app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
-})
+
+start();
+
+

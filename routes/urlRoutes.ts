@@ -1,10 +1,12 @@
-import { Router } from "express";
+import { FastifyInstance } from "fastify";
 import { allRows, addToDb, redirectId } from "../controllers/urlController";
 
-const router = Router();
+export default async function (fastify: FastifyInstance){
+    fastify.get('/all', allRows);
+    fastify.post('/url', addToDb );
+    fastify.get('/:shortId', redirectId);
 
-router.get('/all', allRows);
-router.post('/url', addToDb )
-router.get('/:shortId', redirectId)
+}
 
-export default router;
+
+
