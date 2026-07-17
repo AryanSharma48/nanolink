@@ -5,7 +5,7 @@ import {createTable } from './model/db'
 import urlRoutes from './routes/urlRoutes'; 
 
 const fastify = Fastify({
-  logger: true
+  logger: false
 });
 
 fastify.register(cors);
