@@ -1,18 +1,36 @@
-# LinkMe - URL Shortener API
+# NanoLink - Enterprise URL Shortener 
 
-A robust, containerized REST API for shortening URLs, built from scratch with Node.js, Fastify, TypeScript, and PostgreSQL.
+NanoLink is a high-performance, fault-tolerant URL shortening service designed to handle massive viral traffic spikes. This project demonstrates modern distributed system architecture, built to scale to **>10,000 Requests Per Second (RPS)** with sub-50ms latency.
 
-## Tech Stack
-- **Backend**: Node.js, Fastify, TypeScript
-- **Database**: PostgreSQL (with `pg` driver)
-- **Infrastructure**: Docker, Docker Compose
+## The Tech Stack
 
-## Features
-- **RESTful API:** Clean and predictable endpoints for URL shortening.
-- **Dynamic Token Generation:** Utilizes Node's native `crypto` module to generate secure, randomized short codes.
-- **Persistent Storage:** Uses a persistent, enterprise-grade PostgreSQL database.
-- **Security:** Implements parameterized SQL queries to protect the database against SQL Injection attacks.
-- **Containerization:** The entire backend and database are wrapped inside Docker containers, wired together using a custom Docker Compose network, with credentials secured via a `.env` file.
+- **Backend (API):** Node.js (v22), Fastify, TypeScript
+- **Frontend (Client):** React, TypeScript, Vite
+- **Database:** PostgreSQL (with `pg` driver)
+- **Infrastructure:** Docker, Docker Compose
+- **Future Additions:** Redis, Kafka, Prometheus, Grafana
+
+## The Architecture & Vision
+
+NanoLink is separated into two primary services:
+
+1. **The Backend API:** A blazing fast Fastify server compiled natively to JavaScript. It features an **auto-healing collision mechanism** utilizing a 7-character Base62 encoding system (via `nanoid`). It is completely protected against SQL injections via parameterized queries and handles graceful fallback for 404/400 errors.
+2. **The Frontend Client:** A lightning-fast React application built with Vite for optimal Hot Module Replacement and minified production bundles.
+
+Both services and the database are fully containerized using Docker, communicating over an isolated virtual network.
+
+### Engineering Roadmap (The Scale)
+We are currently building towards a "Twitter/X scale" system. Here is the roadmap of advanced distributed systems being integrated into NanoLink:
+
+- [x] **Base62 Encoding:** Cryptographically secure 7-character generation using `nanoid`.
+- [x] **Collision Auto-Healing:** Database constraint retry loops to prevent crashes on duplicate keys.
+- [x] **Containerization:** Fully Dockerized backend environment with isolated network topologies.
+- [ ] **The Caching Layer:** Integrating **Redis** to bypass PostgreSQL reads and serve viral links directly from memory.
+- [ ] **Event-Driven Analytics:** Integrating **Kafka/RabbitMQ** to asynchronously log user clicks without blocking the redirect response time.
+- [ ] **Security & Protection:** Implementing strict **Rate Limiting** to prevent DDoS and database spam.
+- [ ] **Observability:** Adding **Prometheus & Grafana** to visualize RPS, latency, and database health in real-time.
+
+---
 
 ## Getting Started
 
@@ -22,7 +40,7 @@ A robust, containerized REST API for shortening URLs, built from scratch with No
 ### Installation & Setup
 
 1. **Configure Environment Variables**:
-   Create a `.env` file in the root directory and set your Postgres password:
+   Create a `.env` file in the root `backend` directory and set your Postgres password:
    ```env
    POSTGRES_PASSWORD=your_secure_password_here
    ```
@@ -30,9 +48,12 @@ A robust, containerized REST API for shortening URLs, built from scratch with No
 2. **Start the Application**:
    Use Docker Compose to build the images and start the containers in detached mode:
    ```bash
+   cd backend
    docker compose up --build -d
    ```
    *The API will be available at `http://localhost:3000`.*
+
+---
 
 ## API Endpoints
 
@@ -48,7 +69,7 @@ Checks if the server is up and running.
   ```
 
 ### 2. Shorten URL
-Accepts a long URL and generates a short link.
+Accepts a long URL, validates it natively, and generates a short link.
 - **URL**: `/url`
 - **Method**: `POST`
 - **Body** (JSON):
@@ -60,7 +81,7 @@ Accepts a long URL and generates a short link.
 - **Response**:
   ```json
   {
-      "Shortened URL": "http://localhost:3000/a1b2c3d4"
+      "Shortened URL": "http://localhost:3000/a1B2c3D"
   }
   ```
 
@@ -74,7 +95,7 @@ Returns all saved URLs in the database.
       "RESULT": [
           {
               "id": 1,
-              "short_code": "a1b2c3d4",
+              "short_code": "a1B2c3D",
               "long_url": "https://www.google.com"
           }
       ]
@@ -85,4 +106,4 @@ Returns all saved URLs in the database.
 Redirects the user to the original website associated with the short code.
 - **URL**: `/:shortId`
 - **Method**: `GET`
-- **Behavior**: HTTP 302 Redirect to the original `long_url`.
+- **Behavior**: HTTP 302 Redirect to the original `long_url`. Returns 404 if not found.

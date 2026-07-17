@@ -40,7 +40,7 @@ function App() {
 
   return (
     <div className="app-container">
-      <h1 className="title">LinkMe</h1>
+      <h1 className="title">NanoLink</h1>
       <p className="subtitle">Shorten your massive links with style.</p>
 
       <div className="glass-card">

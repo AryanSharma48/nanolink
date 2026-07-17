@@ -4,6 +4,8 @@
     "module": "commonjs",
     "esModuleInterop": true,         // Allows default imports from CommonJS modules
     "forceConsistentCasingInFileNames": true,
-    "strict": true
+    "strict": true,
+    "outDir": "dist",
+    "skipLibCheck": true
   }
 }
