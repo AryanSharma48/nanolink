@@ -5,26 +5,21 @@ NanoLink is a high-performance, fault-tolerant URL shortening service designed t
 ## System Architecture
 
 ```mermaid
+
 graph TD
     Client([Client / Browser])
     
-    subgraph Monorepo
-        subgraph Frontend
-            Dashboard[React / Vite Dashboard]
-        end
-        
-        subgraph Docker Compose [Dockerized Core Infrastructure]
-            API[Fastify API Server]
-            Worker[Kafka Analytics Worker]
-            Redis[(Redis Cache)]
-            DB[(PostgreSQL)]
-            Kafka{Apache Kafka}
-        end
-    end
+    Dashboard[React / Vite Dashboard]
+    API[Fastify API Server]
+    Worker[Kafka Analytics Worker]
+    Redis[(Redis Cache)]
+    DB[(PostgreSQL)]
+    Kafka{Apache Kafka}
 
-    Client -->|POST /url| API
-    Client -->|GET /:shortId| API
-    Client -->|GET /analytics| API
+    Routes["POST /url<br/>GET /:shortId<br/>GET /analytics<br/>GET /all"]
+    
+    Client --> Routes
+    Routes --> API
     
     API <-->|1. Sub-10ms Cache Hit| Redis
     API -->|2. Fire & Forget Click Event| Kafka
@@ -32,6 +27,7 @@ graph TD
     
     Kafka -->|4. Consume Event Queue| Worker
     Worker -->|5. Background Bulk Insert| DB
+    
 ```
 
 ## The Tech Stack
