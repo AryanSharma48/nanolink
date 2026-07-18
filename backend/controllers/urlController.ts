@@ -1,8 +1,9 @@
 import { FastifyRequest, FastifyReply } from 'fastify'
 
-import { getAllRows, getRedirectId, insertIntoDb } from '../model/db'
+import { getAllRows, getRedirectId, insertIntoDb, getAnalytics } from '../model/db'
 import { randomUrl } from "../utils/crypto"
 import client from "../model/redis"
+import { publishClickEvent } from '../model/kafka'
 
 //shows all rows from db with pagination
 export async function allRows(req: FastifyRequest<{ Querystring: { page?: string, limit?: string } }>, reply: FastifyReply): Promise<void> {
@@ -16,6 +17,11 @@ export async function allRows(req: FastifyRequest<{ Querystring: { page?: string
         'page': page,
         'limit': limit
     });
+}
+
+export async function allAnalytics(req: FastifyRequest, reply: FastifyReply): Promise<void> {
+    const result = await getAnalytics();
+    reply.send({results : result.rows});
 }
 
 export async function addToDb(req: FastifyRequest, reply: FastifyReply): Promise<void> {
@@ -48,20 +54,28 @@ export async function redirectId(req: FastifyRequest<{ Params: { shortId: string
     const shortId = req.params.shortId as string;
     let redirect = await client.get(shortId);
     
+    // Setup data for Kafka
+    const ip = req.ip;
+    const userAgent = JSON.stringify(req.headers['user-agent']);
+    
     if (redirect) {
         if (redirect === "NOT_FOUND") {
             return reply.status(404).send("URL not found!");
         }
-        return reply.redirect(redirect);
     } else {
         redirect = await getRedirectId(shortId);
         if (redirect) {
             await client.setEx(shortId, 86400, redirect);
-            return reply.redirect(redirect);
         } else {
             // Cache penetration protection: Cache the negative result for 60 seconds
             await client.setEx(shortId, 60, "NOT_FOUND");
             return reply.status(404).send("URL not found!");
         }
     }
+
+    if (redirect !== 'NOT_FOUND'){
+        publishClickEvent(shortId, ip, userAgent);
+        return reply.redirect((redirect as string));
+    }
+
 }

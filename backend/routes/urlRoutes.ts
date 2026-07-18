@@ -1,12 +1,13 @@
 import { FastifyInstance } from "fastify";
 import { ZodTypeProvider } from "fastify-type-provider-zod";
 import { z } from "zod";
-import { allRows, addToDb, redirectId } from "../controllers/urlController";
+import { allRows, addToDb, redirectId, allAnalytics } from "../controllers/urlController";
 
 export default async function (fastify: FastifyInstance) {
     const app = fastify.withTypeProvider<ZodTypeProvider>();
 
     app.get('/all', allRows);
+    app.get('/analytics', allAnalytics);
 
     app.post('/url', {
         schema: {

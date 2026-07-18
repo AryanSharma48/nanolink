@@ -8,6 +8,7 @@ import { config } from './utils/config';
 import { pool } from './model/db';
 import client, { connectRedis } from './model/redis';
 import urlRoutes from './routes/urlRoutes'; 
+import { initKafka } from './model/kafka';
 
 const fastify = Fastify({
   logger: true
@@ -47,6 +48,7 @@ async function start() {
             port: parseInt(config.PORT),
             host: '0.0.0.0',
         }); 
+        await initKafka();
     } catch(err) {
         fastify.log.error(err);
         process.exit(1); 

@@ -10,6 +10,10 @@ export async function getAllRows(limit: number = 50, offset: number = 0) : Promi
     return await pool.query('SELECT * FROM urls ORDER BY id DESC LIMIT $1 OFFSET $2', [limit, offset]);
 }
 
+export async function getAnalytics() : Promise<any> {
+    return await pool.query('SELECT urls.*, COUNT(analytics.id) AS total_clicks FROM urls LEFT JOIN analytics ON urls.short_code = analytics.short_code GROUP BY urls.id');
+}
+
 export async function insertIntoDb(url : string, token : string) : Promise<void> {
     await pool.query('INSERT INTO urls (short_code, long_url) VALUES ($1, $2)', [token, url]);
 }
